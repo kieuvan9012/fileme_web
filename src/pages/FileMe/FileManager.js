@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Moment from 'moment'
-
 import FileBrowser, {Icons} from 'react-keyed-file-browser'
 
 export default class FileManager extends React.Component {
