@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Moment from 'moment';
 import FileBrowser, { Icons } from 'react-keyed-file-browser';
+import Avatar from './Upload';
 
 export default class FileManager extends Component {
   constructor(props) {
@@ -143,18 +144,21 @@ export default class FileManager extends Component {
   render() {
     const { files } = this.state;
     return (
-      <FileBrowser
-        files={files}
-        icons={Icons.FontAwesome(4)}
-        onCreateFolder={this.handleCreateFolder}
-        onCreateFiles={this.handleCreateFiles}
-        onMoveFolder={this.handleRenameFolder}
-        onMoveFile={this.handleRenameFile}
-        onRenameFolder={this.handleRenameFolder}
-        onRenameFile={this.handleRenameFile}
-        onDeleteFolder={this.handleDeleteFolder}
-        onDeleteFile={this.handleDeleteFile}
-      />
+      <React.Fragment>
+        <Avatar />
+        <FileBrowser
+          files={files}
+          icons={Icons.FontAwesome(4)}
+          onCreateFolder={this.handleCreateFolder}
+          onCreateFiles={this.handleCreateFiles}
+          onMoveFolder={this.handleRenameFolder}
+          onMoveFile={this.handleRenameFile}
+          onRenameFolder={this.handleRenameFolder}
+          onRenameFile={this.handleRenameFile}
+          onDeleteFolder={this.handleDeleteFolder}
+          onDeleteFile={this.handleDeleteFile}
+        />
+      </React.Fragment>
     );
   }
 }
