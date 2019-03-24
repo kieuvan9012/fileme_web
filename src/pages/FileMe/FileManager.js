@@ -67,22 +67,16 @@ export default class FileManager extends Component {
         modified: +Moment(),
       };
     });
-    const uniqueNewFiles = [];
-    newFiles.map(newFile => {
-      let exists = false;
-      files.map(existingFile => {
-        if (existingFile.key === newFile.key) {
-          exists = true;
-        }
-        return null;
+    let uniqueNewFiles = [];
+    uniqueNewFiles = newFiles.map(newFile => {
+      const exists = files.some(existingFile => {
+        return existingFile.key === newFile.key;
       });
-      if (!exists) {
-        uniqueNewFiles.push(newFile);
-      }
+      if (!exists) return newFile;
       return null;
     });
     this.setState({
-      files: files.concat(uniqueNewFiles),
+      files: files.concat(uniqueNewFiles.filter(n => n)),
     });
   };
 
@@ -102,7 +96,7 @@ export default class FileManager extends Component {
       return null;
     });
     this.setState({
-      files: newFiles,
+      files: newFiles.filter(n => n),
     });
   };
 
@@ -128,12 +122,8 @@ export default class FileManager extends Component {
 
   handleDeleteFolder = folderKey => {
     const { files } = this.state;
-    const newFiles = [];
-    files.map(file => {
-      if (file.key.substr(0, folderKey.length) !== folderKey) {
-        newFiles.push(file);
-      }
-      return null;
+    const newFiles = files.map(file => {
+      return file.key.substr(0, folderKey.length) !== folderKey;
     });
     this.setState({
       files: newFiles,
@@ -142,12 +132,8 @@ export default class FileManager extends Component {
 
   handleDeleteFile = fileKey => {
     const { files } = this.state;
-    const newFiles = [];
-    files.map(file => {
-      if (file.key !== fileKey) {
-        newFiles.push(file);
-      }
-      return null;
+    const newFiles = files.filter(file => {
+      return file.key !== fileKey;
     });
     this.setState({
       files: newFiles,
