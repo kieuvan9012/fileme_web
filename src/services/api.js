@@ -1,6 +1,10 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
-const apiLink = "http://dephoanmy.vn:9886";
+import axios from 'axios';
+import md5 from 'md5';
+import { Logon_Response } from '@/DTO';
+
+const apiLink = 'http://dephoanmy.vn:9886';
 export async function queryProjectNotice() {
   return request('/api/project/notice');
 }
@@ -103,11 +107,23 @@ export async function updateFakeList(params) {
   });
 }
 
-export async function fakeAccountLogin(params) {
-  return request(apiLink+'/user/login/', {
-    method: 'POST',
-    body: params,
-  });
+export async function accountLogin(Request) {
+  var _this = this;
+  var rltResult = new Logon_Response();
+  const request = Object.assign(Request, { password: md5(Request.password).toUpperCase() });
+  await axios.post(apiLink + '/user/login/', Request)
+    .then(response => {
+      const { data } = response;
+      rltResult.mapNodeExpectResult(data);
+      //if (rltResult.checkResponse()) {}
+      rltResult.tranform2Model(data.data);
+
+      return rltResult;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  return rltResult;
 }
 
 export async function fakeRegister(params) {

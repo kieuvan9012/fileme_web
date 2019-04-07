@@ -5,7 +5,7 @@ import Link from 'umi/link';
 import { Checkbox, Alert, Icon } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
-import md5 from "md5";
+import md5 from 'md5';
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
 @connect(({ login, loading }) => ({
@@ -83,7 +83,7 @@ class LoginPage extends Component {
               !submitting &&
               this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
             <UserName
-              name="userName"
+              name="username"
               placeholder={`${formatMessage({ id: 'app.login.userName' })}: admin or user`}
               rules={[
                 {

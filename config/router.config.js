@@ -49,7 +49,7 @@ export default [
       },
       {
         path: '/filemanager',
-        name: 'dashboard',
+        name: 'FileMe',
         icon: 'laptop',
         component: './FileMe/FileManager'
       },

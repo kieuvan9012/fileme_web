@@ -1,67 +1,154 @@
 import React, { Component } from 'react';
-import { Upload, Icon, message } from 'antd';
+import { Upload, Button, Icon, message, Row } from 'antd';
+import PropTypes from 'prop-types';
+import { connect } from 'dva';
+import {
+  Upload_Response,
+  Upload_Request,
+  Upload_Model
+} from '@/DTO';
 
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
+const Dragger = Upload.Dragger;
 
-function beforeUpload(file) {
-  const isJPG = file.type === 'image/jpeg';
-  if (!isJPG) {
-    message.error('You can only upload JPG file!');
+@connect(({ FileManager }) => ({
+  Upload_Response: FileManager.Upload_Response,
+}))
+class UploadMedia extends Component {
+  static propTypes = {
+    Upload_Response: PropTypes.object.isRequired,
+  };
+  static defaultProps = {
+    Upload_Response: new Upload_Response(),
+  };
+  constructor(props) {
+    super(props);
+
+    this.__isMounted = false;
+    this.isLoading = false;
+    this.state = {
+      fileList: [],
+      uploading: false,
+    };
+    this.uploadConfig = {
+      accept: '.doc, .docx, .docm, .dotx, .dotm, .docb, .xls, .xlsb, .xlsm, .xlsx, .sldx, .pptx, .pptm, .potx, .potm, .ppam, .ppsx, .ppsm, .png, .jpg, .jpeg, .txt, .pdf',
+      multiple: true,
+      action: "http://dephoanmy.vn:9886/upload/media",
+      // onStart: (e) => console.log(e),
+      // onChange: this.onChange,
+      // beforeUpload: (e) => { console.log(e) },
+      // customRequest: (e) => { console.log(e) },
+      data: {
+        user_id: '1',
+        branch: '1'
+      },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        "Accept": 'application/json',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Headers": "Access-Control-Allow-Origin,Content-Type"
+      }
+    }
   }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJPG && isLt2M;
-}
 
-class Avatar extends Component {
-  state = {
-    loading: false,
+  handleUpload = () => {
+    const { fileList } = this.state;
+    const request = new Upload_Request();
+    let reader = new FileReader();
+    reader.re(fileList[0]);
+    reader.onload = e => {
+      request = Object.assign(request, {
+        media: e.target.result,
+        user_id: '1',
+        branch: '1'
+      });
+      this.setState({
+        uploading: true,
+      });
+
+      const { dispatch } = _this.props;
+      dispatch({
+        type: 'FileManager/uploadMedia',
+        payload: request,
+      });
+    };
+  };
+  onRemove = (file) => {
+    this.setState((state) => {
+      const index = state.fileList.indexOf(file);
+      const newFileList = state.fileList.slice();
+      newFileList.splice(index, 1);
+      return {
+        fileList: newFileList,
+      };
+    });
   };
 
-  handleChange = info => {
-    if (info.file.status === 'uploading') {
-      this.setState({ loading: true });
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, imageUrl =>
-        this.setState({
-          imageUrl,
-          loading: false,
-        })
-      );
-    }
+  beforeUpload = (file) => {
+    this.setState(state => ({
+      fileList: [...state.fileList, file],
+    }));
+    return false;
   };
+  onChange = (info) => {
+    const status = info.file.status;
+    const { fileList } = this.state;
+    const request = new Upload_Request();
+    let reader = new FileReader();
+    console.log(info);
+    // reader.readAsDataURL(info.file);
+    // reader.onload = e => {
+    //   request = Object.assign(request, {
+    //     media: e.target.result,
+    //     user_id: '1',
+    //     branch: '1'
+    //   });
+    //   this.setState({
+    //     uploading: true,
+    //   });
 
+    //   const { dispatch } = _this.props;
+    //   dispatch({
+    //     type: 'FileManager/uploadMedia',
+    //     payload: request,
+    //   });
+    //};
+    // if (status !== 'uploading') {
+    //   console.log(info.file, info.fileList);
+    // }
+    // if (status === 'done') {
+    //   message.success(`${info.file.name} file uploaded successfully.`);
+    // } else if (status === 'error') {
+    //   message.error(`${info.file.name} file upload failed.`);
+    // }
+  }
   render() {
-    const { loading, imageUrl } = this.state;
-    const uploadButton = () => (
-      <div>
-        <Icon type={loading ? 'loading' : 'plus'} />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
-
+    const { uploading, fileList } = this.state;
     return (
-      <Upload
-        name="avatar"
-        listType="picture-card"
-        className="avatar-uploader"
-        showUploadList={false}
-        action="//jsonplaceholder.typicode.com/posts/"
-        beforeUpload={beforeUpload}
-        onChange={this.handleChange}
-      >
-        {imageUrl ? <img src={imageUrl} alt="avatar" /> : uploadButton}
-      </Upload>
+      <Row>
+        {/* <Dragger {...props}>
+          <p className="ant-upload-drag-icon">
+            <Icon type="inbox" />
+          </p>
+          <p className="ant-upload-text">Click or drag file to this area to upload</p>
+        </Dragger> */}
+
+        <Upload {...this.uploadConfig}>
+          <Button>
+            <Icon type="upload" /> Select File
+          </Button>
+        </Upload>
+        <Button
+          type="primary"
+          onClick={this.handleUpload}
+          disabled={fileList.length === 0}
+          loading={uploading}
+          style={{ marginTop: 16 }}
+        >
+          {uploading ? 'Uploading' : 'Start Upload'}
+        </Button>
+      </Row>
     );
   }
 }
-export default Avatar;
+export default UploadMedia;
