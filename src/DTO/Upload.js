@@ -36,6 +36,6 @@ function Upload_Model() {
 function Upload_Request() {
     this.base = BaseRequest;
     this.media = "";
-    this.brand = 1;
+    this.branch = '1';
 }
 export { Upload_Response, Upload_Model, Upload_Request };

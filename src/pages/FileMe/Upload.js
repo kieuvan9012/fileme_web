@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { Upload, Button, Icon, message, Row } from 'antd';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
+import { isEqual } from 'lodash';
 import {
   Upload_Response,
   Upload_Request,
   Upload_Model
 } from '@/DTO';
+import { file } from '@babel/types';
 
 const Dragger = Upload.Dragger;
 
@@ -26,118 +28,65 @@ class UploadMedia extends Component {
     this.__isMounted = false;
     this.isLoading = false;
     this.state = {
+      file: null,
       fileList: [],
       uploading: false,
     };
-    this.uploadConfig = {
-      accept: '.doc, .docx, .docm, .dotx, .dotm, .docb, .xls, .xlsb, .xlsm, .xlsx, .sldx, .pptx, .pptm, .potx, .potm, .ppam, .ppsx, .ppsm, .png, .jpg, .jpeg, .txt, .pdf',
-      multiple: true,
-      action: "http://dephoanmy.vn:9886/upload/media",
-      // onStart: (e) => console.log(e),
-      // onChange: this.onChange,
-      // beforeUpload: (e) => { console.log(e) },
-      // customRequest: (e) => { console.log(e) },
-      data: {
-        user_id: '1',
-        branch: '1'
-      },
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        "Accept": 'application/json',
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Headers": "Access-Control-Allow-Origin,Content-Type"
-      }
-    }
   }
-
-  handleUpload = () => {
+  // shouldComponentUpdate = (nextProps) => {
+  //   const { Upload_Response } = this.props;
+  //   if (isEqual(Upload_Response.Result, nextProps.Upload_Response.Result))
+  //     return false;
+  //   else {
+  //     this.setState({
+  //       uploading: false
+  //     })
+  //     return true;
+  //   }
+  // };
+  handleUpload = (info) => {
     const { fileList } = this.state;
-    const request = new Upload_Request();
-    let reader = new FileReader();
-    reader.re(fileList[0]);
-    reader.onload = e => {
-      request = Object.assign(request, {
-        media: e.target.result,
-        user_id: '1',
-        branch: '1'
-      });
-      this.setState({
-        uploading: true,
-      });
-
-      const { dispatch } = _this.props;
-      dispatch({
-        type: 'FileManager/uploadMedia',
-        payload: request,
-      });
-    };
-  };
-  onRemove = (file) => {
-    this.setState((state) => {
-      const index = state.fileList.indexOf(file);
-      const newFileList = state.fileList.slice();
-      newFileList.splice(index, 1);
-      return {
-        fileList: newFileList,
-      };
+    var formdata = new FormData();
+    formdata.append("user_id", '1');
+    formdata.append("brand", '1');
+    formdata.append("media", info.file);
+    //const request = Object.assign(new Upload_Request(), formdata);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'FileManager/uploadMedia',
+      payload: formdata,
     });
   };
 
   beforeUpload = (file) => {
     this.setState(state => ({
       fileList: [...state.fileList, file],
+      uploading: true
     }));
-    return false;
   };
-  onChange = (info) => {
-    const status = info.file.status;
-    const { fileList } = this.state;
-    const request = new Upload_Request();
-    let reader = new FileReader();
-    console.log(info);
-    // reader.readAsDataURL(info.file);
-    // reader.onload = e => {
-    //   request = Object.assign(request, {
-    //     media: e.target.result,
-    //     user_id: '1',
-    //     branch: '1'
-    //   });
-    //   this.setState({
-    //     uploading: true,
-    //   });
-
-    //   const { dispatch } = _this.props;
-    //   dispatch({
-    //     type: 'FileManager/uploadMedia',
-    //     payload: request,
-    //   });
-    //};
-    // if (status !== 'uploading') {
-    //   console.log(info.file, info.fileList);
-    // }
-    // if (status === 'done') {
-    //   message.success(`${info.file.name} file uploaded successfully.`);
-    // } else if (status === 'error') {
-    //   message.error(`${info.file.name} file upload failed.`);
-    // }
-  }
   render() {
     const { uploading, fileList } = this.state;
+    const uploadConfig = {
+      accept: '.doc, .docx, .docm, .dotx, .dotm, .docb, .xls, .xlsb, .xlsm, .xlsx, .sldx, .pptx, .pptm, .potx, .potm, .ppam, .ppsx, .ppsm, .png, .jpg, .jpeg, .txt, .pdf',
+      multiple: true,
+      fileList,
+      beforeUpload: this.beforeUpload,
+      customRequest: this.handleUpload
+    }
     return (
       <Row>
-        {/* <Dragger {...props}>
+        <Dragger {...uploadConfig}>
           <p className="ant-upload-drag-icon">
             <Icon type="inbox" />
           </p>
           <p className="ant-upload-text">Click or drag file to this area to upload</p>
-        </Dragger> */}
+        </Dragger>
 
-        <Upload {...this.uploadConfig}>
+        {/* <Upload {...uploadConfig}>
           <Button>
             <Icon type="upload" /> Select File
           </Button>
-        </Upload>
+        </Upload> */}
         <Button
           type="primary"
           onClick={this.handleUpload}

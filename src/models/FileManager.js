@@ -43,7 +43,6 @@ export default {
       };
     },
     uploadMedia_Finish(state, { payload }) {
-      console.log(payload);
       return {
         ...state,
         Upload_Response: payload,

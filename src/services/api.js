@@ -2,7 +2,7 @@ import { stringify } from 'qs';
 import request from '@/utils/request';
 import axios from 'axios';
 import md5 from 'md5';
-import { Logon_Response } from '@/DTO';
+import { Logon_Response, Register_Response } from '@/DTO';
 
 const apiLink = 'http://dephoanmy.vn:9886';
 export async function queryProjectNotice() {
@@ -115,6 +115,26 @@ export async function accountLogin(Request) {
     .then(response => {
       const { data } = response;
       rltResult.mapNodeExpectResult(data);
+      if (rltResult.checkResponse()) {
+        rltResult.tranform2Model(data.data);
+      }
+      return rltResult;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  return rltResult;
+}
+
+export async function userRegister(Request) {
+  var _this = this;
+  var rltResult = new Register_Response();
+  const request = Object.assign(Request, { password: md5(Request.password).toUpperCase() });
+  await axios.post(apiLink + '/user/register/', Request)
+    .then(response => {
+      console.log(response);
+      const { data } = response;
+      rltResult.mapNodeExpectResult(data);
       //if (rltResult.checkResponse()) {}
       rltResult.tranform2Model(data.data);
 
@@ -124,13 +144,6 @@ export async function accountLogin(Request) {
       console.log(error);
     });
   return rltResult;
-}
-
-export async function fakeRegister(params) {
-  return request('/api/register', {
-    method: 'POST',
-    body: params,
-  });
 }
 
 export async function queryNotices(params = {}) {

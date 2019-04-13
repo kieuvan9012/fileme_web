@@ -1,4 +1,4 @@
-import { fakeRegister } from '@/services/api';
+import { userRegister } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -11,7 +11,10 @@ export default {
 
   effects: {
     *submit({ payload }, { call, put }) {
-      const response = yield call(fakeRegister, payload);
+      const response = yield call(userRegister, payload);
+      if (response.Success === 1) {
+        window.location.href = "/";
+      };
       yield put({
         type: 'registerHandle',
         payload: response,

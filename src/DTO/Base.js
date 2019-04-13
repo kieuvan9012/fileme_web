@@ -17,7 +17,12 @@ BaseResponse.prototype.mapNodeExpectResult = function (data) {
     this.Mesage = data.mesage || '';
   }
 };
-
+BaseResponse.prototype.checkResponse = function (data) {
+  if (data !== undefined && data !== null) {
+    return this.Success === 1;
+  }
+  return false;
+};
 function BaseRequest() {
   this.user_id = "";//dung ham lay id tu session
 }

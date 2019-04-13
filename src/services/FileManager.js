@@ -3,12 +3,13 @@ import {
   FileList_Response,
   FileList_Model,
   Upload_Response,
-  Upload_Model
+  Upload_Model,
+  InsertFile_Response,
+  InsertFile_Model
 } from '@/DTO';
 import axios from 'axios';
 
 export async function getFileList(Request) {
-  console.log('BEGIN invoke api FileList');
   var _this = this;
   var rltResult = new FileList_Response();
 
@@ -19,7 +20,7 @@ export async function getFileList(Request) {
       //if (rltResult.checkResponse()) {}
       rltResult.tranform2Model(data.data);
 
-      return rltResult;
+      //return rltResult;
     })
     .catch(error => {
       console.log(error);
@@ -33,7 +34,7 @@ export async function uploadMedia(Request) {
   await axios.post('http://dephoanmy.vn:9886/upload/media', Request, {
     headers: {
       'Content-Type': 'multipart/form-data',
-      Accept: 'application/json'
+      'Accept': 'application/json'
     }
   })
     .then(response => {
@@ -42,7 +43,24 @@ export async function uploadMedia(Request) {
       //if (rltResult.checkResponse()) {}
       rltResult.tranform2Model(data.data);
 
-      return rltResult;
+      //return rltResult;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  return rltResult;
+}
+export async function insertFile(Request) {
+  console.log('BEGIN invoke api insertFile');
+  var _this = this;
+  var rltResult = new InsertFile_Response();
+  await axios.post('http://dephoanmy.vn:9886/file/insert', Request)
+    .then(response => {
+      const { data } = response;
+      rltResult.mapNodeExpectResult(data);
+      if (rltResult.checkResponse()) {
+        rltResult.tranform2Model(data.data);
+      }
     })
     .catch(error => {
       console.log(error);
