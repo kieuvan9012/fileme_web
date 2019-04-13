@@ -5,8 +5,8 @@ import {
   Upload_Response,
   Upload_Model
 } from '@/DTO';
-import { getFileList, uploadMedia } from '@/services/FileManager';
-import { isEqual } from 'lodash';
+import { getFileList, uploadMedia, insertFile } from '@/services/FileManager';
+import { isEqual, assign } from 'lodash';
 
 export default {
   namespace: 'FileManager',
@@ -27,11 +27,21 @@ export default {
     },
     *uploadMedia({ payload }, { call, put }) {
       var rltResult = yield call(uploadMedia, payload);
+      if (rltResult.Success === 1) {
+        yield put({
+          type: 'insertFile',
+          payload: assign(rltResult.Result[0], { "user_id": "1" }),
+        });
+      }
+    },
+    *insertFile({ payload }, { call, put }) {
+      var rltResult = yield call(insertFile, payload);
       //if (rltResult.RetCode === RET_CODE.SUCCESS) {}
       yield put({
         type: 'uploadMedia_Finish',
         payload: rltResult,
       });
+      alert("success");
     },
   },
 
