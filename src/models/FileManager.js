@@ -3,7 +3,9 @@ import {
   FileList_Response,
   FileList_Model,
   Upload_Response,
-  Upload_Model
+  Upload_Model,
+  InsertFile_Response,
+  InsertFile_Model
 } from '@/DTO';
 import { getFileList, uploadMedia, insertFile } from '@/services/FileManager';
 import { isEqual, assign } from 'lodash';
@@ -14,6 +16,7 @@ export default {
   state: {
     FileList_Response: new FileList_Response(),
     Upload_Response: new Upload_Response(),
+    InsertFile_Response: new InsertFile_Response()
   },
 
   effects: {
@@ -30,18 +33,21 @@ export default {
       if (rltResult.Success === 1) {
         yield put({
           type: 'insertFile',
-          payload: assign(rltResult.Result[0], { "user_id": "1" }),
+          payload: assign(rltResult.Result[0], { "user_id": "612","parrent_path":"" }),
         });
       }
+      yield put({
+        type: 'uploadMedia_Finish',
+        payload: rltResult,
+      });
     },
     *insertFile({ payload }, { call, put }) {
       var rltResult = yield call(insertFile, payload);
       //if (rltResult.RetCode === RET_CODE.SUCCESS) {}
       yield put({
-        type: 'uploadMedia_Finish',
+        type: 'insertFile_Finish',
         payload: rltResult,
       });
-      alert("success");
     },
   },
 
@@ -56,6 +62,12 @@ export default {
       return {
         ...state,
         Upload_Response: payload,
+      };
+    },
+    insertFile_Finish(state, { payload }) {
+      return {
+        ...state,
+        InsertFile_Response: payload,
       };
     },
   },

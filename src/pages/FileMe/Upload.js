@@ -6,7 +6,10 @@ import { isEqual } from 'lodash';
 import {
   Upload_Response,
   Upload_Request,
-  Upload_Model
+  Upload_Model,
+  InsertFile_Response,
+  InsertFile_Request,
+  InsertFile_Model
 } from '@/DTO';
 import { file } from '@babel/types';
 
@@ -14,13 +17,16 @@ const Dragger = Upload.Dragger;
 
 @connect(({ FileManager }) => ({
   Upload_Response: FileManager.Upload_Response,
+  InsertFile_Response: FileManager.InsertFile_Response
 }))
 class UploadMedia extends Component {
   static propTypes = {
-    Upload_Response: PropTypes.object.isRequired,
+    Upload_Response: PropTypes.object,
+    InsertFile_Response: PropTypes.object.isRequired
   };
   static defaultProps = {
     Upload_Response: new Upload_Response(),
+    InsertFile_Response: new InsertFile_Response()
   };
   constructor(props) {
     super(props);
@@ -33,21 +39,21 @@ class UploadMedia extends Component {
       uploading: false,
     };
   }
-  // shouldComponentUpdate = (nextProps) => {
-  //   const { Upload_Response } = this.props;
-  //   if (isEqual(Upload_Response.Result, nextProps.Upload_Response.Result))
-  //     return false;
-  //   else {
-  //     this.setState({
-  //       uploading: false
-  //     })
-  //     return true;
-  //   }
-  // };
+  shouldComponentUpdate = (nextProps) => {
+    const { InsertFile_Response } = this.props;
+    if (isEqual(InsertFile_Response.Result, nextProps.InsertFile_Response.Result))
+      return false;
+    else {
+      this.setState({
+        uploading: false
+      });
+      return true;
+    }
+  };
   handleUpload = (info) => {
     const { fileList } = this.state;
     var formdata = new FormData();
-    formdata.append("user_id", '1');
+    formdata.append("user_id", '612');
     formdata.append("brand", '1');
     formdata.append("media", info.file);
     //const request = Object.assign(new Upload_Request(), formdata);

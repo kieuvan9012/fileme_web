@@ -6,7 +6,7 @@ function FileList_Response() {
 }
 
 FileList_Response.prototype = new BaseResponse();
-FileList_Response.prototype.tranform2Model = function(rawData) {
+FileList_Response.prototype.tranform2Model = function (rawData) {
   const _this = this;
   if (!Commons.isNullOrEmpty(rawData)) {
     _this.Result = rawData.map((item, index) => {
@@ -17,11 +17,13 @@ FileList_Response.prototype.tranform2Model = function(rawData) {
         Date: item.date,
         ParentId: item.parent_id,
         Destination: item.destination,
-        Originalname: item.originalname,
+        OriginalName: item.originalname,
         Path: item.path,
-        Mimetype: item.mimetype,
+        MimeType: item.mimetype,
         Size: item.size,
-        Filename: item.filename,
+        FileName: item.filename,
+        ParentId: item.parent_id,
+        FilePath: getFilePath(rawData, item).slice(0, -1)
       });
     });
   }
@@ -33,11 +35,22 @@ function FileList_Model() {
   this.Date = '';
   this.ParentId = '';
   this.Destination = '';
-  this.Originalname = '';
+  this.OriginalName = '';
   this.Path = '';
-  this.Mimetype = '';
+  this.MimeType = '';
   this.Size = '';
-  this.Filename = '';
+  this.FileName = '';
+  this.ParentId = '';
+  this.FilePath = '';
 }
-
+function getFilePath(rawData, item) {
+  let filepath = "";
+  const parent = rawData.find(element => { return element.id === item.parent_id });
+  console.log(parent);
+  if (parent)
+    filepath += getFilePath(rawData, parent) + item.originalname + "/";
+  else filepath = item.originalname+"/"
+  console.log(filepath);
+  return filepath;
+}
 export { FileList_Response, FileList_Model };

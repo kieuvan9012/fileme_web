@@ -47,7 +47,7 @@ export default class FileManager extends Component {
     const { dispatch } = _this.props;
     dispatch({
       type: 'FileManager/getFileList',
-      payload: { user_id: '1' },
+      payload: { user_id: '612' },
     });
   };
   handleCreateFolder = key => {
@@ -146,14 +146,27 @@ export default class FileManager extends Component {
 
   render() {
     const { FileList_Response } = this.props;
-    const fileList = FileList_Response.Result.map(item => {
+    const { Result } = FileList_Response;
+    // FileList_Response.Result.forEach(item => {
+    //   FileList_Response.Result.forEach(sub => {
+    //     if (sub.parent_id === item.id) {
+    //       console.log(item.originalName)
+    //     }
+    //   })
+    // });
+    const fileList = Result.map(item => {
+      // Result.forEach(sub => {
+      //   if (item.parent_id === sub.id) {
+      //     item.FilePath += (sub.OriginalName + "/");
+      //   }
+      // })
       return {
-        key: item.Destination + item.Originalname,
+        key: item.FilePath,
         modified: new Date(item.Date),
         size: Number(item.Size) || 0,
       };
     });
-
+    console.log(FileList_Response.Result);
     return (
       <React.Fragment>
         <UploadMedia />
