@@ -51,7 +51,7 @@ export default [
         path: '/filemanager',
         name: 'FileMe',
         icon: 'laptop',
-        component: './FileMe/FileManager'
+        component: './FileMe/FileMe_Main'
       },
       // forms
       {

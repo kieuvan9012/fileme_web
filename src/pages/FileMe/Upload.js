@@ -22,11 +22,14 @@ const Dragger = Upload.Dragger;
 class UploadMedia extends Component {
   static propTypes = {
     Upload_Response: PropTypes.object,
-    InsertFile_Response: PropTypes.object.isRequired
+    InsertFile_Response: PropTypes.object.isRequired,
+    ParentId: PropTypes.number,
+    onUploaded: PropTypes.func.isRequired
   };
   static defaultProps = {
     Upload_Response: new Upload_Response(),
-    InsertFile_Response: new InsertFile_Response()
+    InsertFile_Response: new InsertFile_Response(),
+    onUploaded: () => { }
   };
   constructor(props) {
     super(props);
@@ -41,8 +44,10 @@ class UploadMedia extends Component {
   }
   shouldComponentUpdate = (nextProps) => {
     const { InsertFile_Response } = this.props;
-    if (isEqual(InsertFile_Response.Result, nextProps.InsertFile_Response.Result))
+    if (isEqual(InsertFile_Response.Result, nextProps.InsertFile_Response.Result)) {
+      this.props.onUploaded instanceof Function && this.props.onUploaded(nextProps.InsertFile_Response.Success === 1);
       return false;
+    }
     else {
       this.setState({
         uploading: false
@@ -52,15 +57,17 @@ class UploadMedia extends Component {
   };
   handleUpload = (info) => {
     const { fileList } = this.state;
+    const { dispatch } = this.props;
     var formdata = new FormData();
     formdata.append("user_id", '612');
     formdata.append("brand", '1');
     formdata.append("media", info.file);
-    //const request = Object.assign(new Upload_Request(), formdata);
-    const { dispatch } = this.props;
     dispatch({
       type: 'FileManager/uploadMedia',
-      payload: formdata,
+      payload: {
+        formdata: formdata,
+        ParentId: this.props.ParentId
+      },
     });
   };
 

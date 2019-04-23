@@ -23,7 +23,7 @@ FileList_Response.prototype.tranform2Model = function (rawData) {
         Size: item.size,
         FileName: item.filename,
         ParentId: item.parent_id,
-        FilePath: getFilePath(rawData, item).slice(0, -1)
+        FilePath: getFilePath(rawData, item)
       });
     });
   }
@@ -43,14 +43,14 @@ function FileList_Model() {
   this.ParentId = '';
   this.FilePath = '';
 }
+
 function getFilePath(rawData, item) {
   let filepath = "";
   const parent = rawData.find(element => { return element.id === item.parent_id });
-  console.log(parent);
   if (parent)
     filepath += getFilePath(rawData, parent) + item.originalname + "/";
-  else filepath = item.originalname+"/"
-  console.log(filepath);
+  else filepath = item.originalname + "/"
   return filepath;
 }
+
 export { FileList_Response, FileList_Model };

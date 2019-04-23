@@ -31,7 +31,7 @@ export async function uploadMedia(Request) {
   console.log('BEGIN invoke api uploadMedia');
   var _this = this;
   var rltResult = new Upload_Response();
-  await axios.post('http://dephoanmy.vn:9886/upload/media', Request, {
+  await axios.post('http://dephoanmy.vn:9886/upload/media', Request.formdata, {
     headers: {
       'Content-Type': 'multipart/form-data',
       'Accept': 'application/json'
