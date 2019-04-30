@@ -67,3 +67,17 @@ export async function insertFile(Request) {
     });
   return rltResult;
 }
+export async function deleteFile(Request) {
+  console.log('BEGIN invoke api deletefile');
+  var _this = this;
+  var rltResult = new BaseResponse();
+  await axios.post('http://dephoanmy.vn:9886/file/delete', Request)
+    .then(response => {
+      const { data } = response;
+      rltResult.mapNodeExpectResult(data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  return rltResult;
+}

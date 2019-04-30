@@ -7,7 +7,7 @@ import {
   InsertFile_Response,
   InsertFile_Model
 } from '@/DTO';
-import { getFileList, uploadMedia, insertFile } from '@/services/FileManager';
+import { getFileList, uploadMedia, insertFile, deleteFile } from '@/services/FileManager';
 import { isEqual, assign } from 'lodash';
 
 export default {
@@ -16,7 +16,8 @@ export default {
   state: {
     FileList_Response: new FileList_Response(),
     Upload_Response: new Upload_Response(),
-    InsertFile_Response: new InsertFile_Response()
+    InsertFile_Response: new InsertFile_Response(),
+    isLoading: false
   },
 
   effects: {
@@ -61,6 +62,14 @@ export default {
         payload: rltResult,
       });
     },
+    *deleteFile({ payload }, { call, put }) {
+      var rltResult = yield call(deleteFile, payload);
+      //if (rltResult.RetCode === RET_CODE.SUCCESS) {}
+      yield put({
+        type: 'deleteFile_Finish',
+        payload: rltResult,
+      });
+    },
   },
 
   reducers: {
@@ -80,6 +89,11 @@ export default {
       return {
         ...state,
         InsertFile_Response: payload,
+      };
+    },
+    deleteFile_Finish(state, { payload }) {
+      return {
+        ...state
       };
     },
   },

@@ -130,13 +130,17 @@ export default class FileManager extends Component {
   };
 
   handleDeleteFolder = folderKey => {
-    const { files } = this.state;
-    const newFiles = files.map(file => {
-      return file.key.substr(0, folderKey.length) !== folderKey;
+    const { FileList_Response } = this.props;
+    const { Result } = FileList_Response;
+    const deleteFiles = Result.map(file => {
+      return file.key.substr(0, folderKey.length) !== folderKey? file.context.id : null;
     });
-    this.setState({
-      files: newFiles,
-    });
+    const { dispatch } = this.props;
+    console.log(deleteFiles);
+    // dispatch({
+    //   type: 'FileManager/getFileList',
+    //   payload: { user_id: '612' },
+    // });
   };
 
   handleDeleteFile = fileKey => {
